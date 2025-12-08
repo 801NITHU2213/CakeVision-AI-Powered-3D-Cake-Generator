@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎂 GenAI Cake Chatbot</title>
+  <style>
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #fff3e0, #ffe0cc);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding: 40px 20px;
+      text-align: center;
+      color: #333;
+    }
+    h1 { font-size: 2.5em; color: #ff7043; margin-bottom: 10px; }
+    p.subtitle { font-size: 1.1em; color: #555; margin-bottom: 30px; }
+    .input-container {
+      display: flex; justify-content: center; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+    }
+    input {
+      padding: 10px 15px; width: 300px; border-radius: 8px; border: 1px solid #ccc;
+      font-size: 1em; outline: none; transition: border 0.3s;
+    }
+    input:focus { border-color: #ff7043; }
+    button {
+      padding: 10px 18px; border-radius: 8px;
+      background-color: #ff7043; color: white; border: none; cursor: pointer;
+      font-weight: bold; font-size: 1em;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover { background-color: #ff5722; transform: scale(1.05);}
+    #output { margin-top: 30px; width: 100%; max-width: 600px; text-align: center; }
+    img {
+      max-width: 100%; border-radius: 12px; margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.3s ease;
+    }
+    img:hover { transform: scale(1.02); }
+    .loader {
+      border: 6px solid #f3f3f3; border-top: 6px solid #ff7043; border-radius: 50%;
+      width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+    .error { color: red; font-weight: 500; }
+    .info { color: gray; font-size: 0.9em;}
+  </style>
+</head>
+<body>
+  <h1>🎂 GenAI Cake Chatbot</h1>
+  <p class="subtitle">Describe your dream cake and let AI bake it visually!</p>
+
+  <div class="input-container">
+    <input type="text" id="prompt" placeholder="e.g., A 3-tier chocolate cake with strawberries on top" />
+    <button id="generateBtn">Generate 🍰</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+  document.getElementById("generateBtn").addEventListener("click", async () => {
+    const prompt = document.getElementById("prompt").value.trim();
+    const output = document.getElementById("output");
+
+    if (!prompt) {
+      output.innerHTML = `<p class="error">⚠️ Please enter a cake description.</p>`;
+      return;
+    }
+
+    output.innerHTML = `
+      <div class="loader"></div>
+      <p>Whipping up your dream cake... 🍰 Please wait.</p>
+    `;
+
+    try {
+      const response = await fetch("http://localhost:5000/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Received:", data);
+
+      if (data.image_url && data.top_image_url) {
+        output.innerHTML = `
+          <p>Your cake is ready! 🎉</p>
+          <img src="http://localhost:5000${data.image_url}" alt="Generated Cake Image" />
+          <br>
+          <button id="arBtn" style="margin-top:16px;">🍰 View in 3D</button>
+        `;
+
+        // FIXED ✔ TOP TEXTURE URL NOW CORRECT
+        document.getElementById("arBtn").addEventListener("click", function() {
+          window.open(
+            "ar_view.html?texture=" +
+            encodeURIComponent("http://localhost:5000" + data.image_url) +
+            "&top=" +
+            encodeURIComponent("http://localhost:5000" + data.top_image_url),
+            "_blank"
+          );
+        });
+
+      } else if (data.error) {
+        output.innerHTML = `<p class="error">❌ Error from API: ${data.error}</p>`;
+      } else {
+        output.innerHTML = `<p class="error">⚠️ Unexpected response: ${JSON.stringify(data)}</p>`;
+      }
+
+    } catch (err) {
+      console.error("Fetch error:", err);
+      output.innerHTML = `
+        <p class="error">❌ Error: ${err.message}</p>
+        <p class="info">(Ensure your Flask backend is running at <code>http://localhost:5000</code> and you opened this page via a local server.)</p>
+      `;
+    }
+  });
+  </script>
+
+</body>
+</html>

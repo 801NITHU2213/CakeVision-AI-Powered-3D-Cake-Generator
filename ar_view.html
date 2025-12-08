@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Cake Cylinder Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #272744; }
+    #renderCanvas { width: 100vw; height: 88vh; display: block; }
+  </style>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+</head>
+<body>
+  <canvas id="renderCanvas"></canvas>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const textureUrl = params.get('texture');
+    const topUrl = params.get('top');
+
+    if (!textureUrl || !topUrl) {
+        alert("Missing cake texture or top image URL!");
+    } else {
+      const canvas = document.getElementById("renderCanvas");
+      const engine = new BABYLON.Engine(canvas, true);
+
+      const createScene = function () {
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.15, 0.15, 0.23, 1);
+
+        // Camera
+        const camera = new BABYLON.ArcRotateCamera("Camera",
+          Math.PI/2, Math.PI/2.4, 2.7, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+
+        // Light
+        new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+        // Side cylinder
+        const cakeCylinder = BABYLON.MeshBuilder.CreateCylinder("cake", {
+          diameter: 2.2,
+          height: 1.2,
+          tessellation: 140
+        }, scene);
+
+        const sideMat = new BABYLON.StandardMaterial("sideMat", scene);
+        sideMat.diffuseTexture = new BABYLON.Texture(textureUrl, scene);
+        sideMat.specularColor = new BABYLON.Color3(0,0,0);
+        cakeCylinder.material = sideMat;
+
+        // Top Disc
+        const topDisc = BABYLON.MeshBuilder.CreateDisc("topDisc", {
+          radius: 1.1, tessellation: 90
+        }, scene);
+
+        const topMat = new BABYLON.StandardMaterial("topMat", scene);
+
+        // ALWAYS APPLY TOP IMAGE
+        topMat.diffuseTexture = new BABYLON.Texture(topUrl, scene);
+        topMat.specularColor = new BABYLON.Color3(0, 0, 0);
+
+        topDisc.material = topMat;
+        topDisc.position.y = 0.6 + 0.002;
+        topDisc.rotation.x = Math.PI / 2;
+
+        // Bottom Disc
+        const bottomDisc = topDisc.clone("bottomDisc");
+        bottomDisc.position.y = -0.6 - 0.002;
+        bottomDisc.rotation.x = -Math.PI / 2;
+
+        const botMat = new BABYLON.StandardMaterial("botMat", scene);
+        botMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+        botMat.specularColor = new BABYLON.Color3(0, 0, 0);
+        bottomDisc.material = botMat;
+
+        return scene;
+      };
+
+      const scene = createScene();
+      engine.runRenderLoop(() => scene.render());
+      window.addEventListener("resize", () => engine.resize());
+    }
+  </script>
+</body>
+</html>
