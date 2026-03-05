@@ -17,7 +17,7 @@ The system integrates Stable Diffusion XL for image generation and Babylon.js fo
 Live Demo: https://drive.google.com/file/d/1G4wuD4ZlkVSVarF4syMA3q6OeDn4elLg/view
 
 ### Example Prompt
-"chocolate cake with strawberry chocolate toppings"
+"chocolate cake with strawberry chocolate side frosting"
 
 ### Output
 - AI-generated cake texture
