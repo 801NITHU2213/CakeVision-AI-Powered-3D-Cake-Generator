@@ -10,7 +10,7 @@ The system integrates Stable Diffusion XL for image generation and Babylon.js fo
 ![CakeVision Preview](preview.jpeg)
 
 ### Generated 3D Cake Rendering
-![CakeVision Preview](preview1.jpeg)
+![CakeVision Preview](preview 1.jpeg)
 
 ## 🚀 Demo
 
