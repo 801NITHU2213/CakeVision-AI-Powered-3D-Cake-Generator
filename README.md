@@ -4,7 +4,27 @@ CakeVision is a generative AI application that converts natural language cake de
 
 The system integrates Stable Diffusion XL for image generation and Babylon.js for 3D visualization, enabling users to design and visualize custom cakes interactively.
 
-## Features
+## 📸 Preview
+
+![CakeVision Preview]
+
+## 🚀 Demo
+
+Live Demo: https://drive.google.com/file/d/1G4wuD4ZlkVSVarF4syMA3q6OeDn4elLg/view
+
+### Example Prompt
+"A 3-tier chocolate cake with strawberry toppings"
+
+### Output
+- AI-generated cake texture
+- Real-time 3D rendered cake model
+
+## 🧠 How It Works
+1. User enters a cake description.
+2. AI generates cake texture using Stability API.
+3. Three.js renders a real-time 3D cake model.
+
+## ✨ Features
 
 • AI-based cake texture generation using Stable Diffusion XL  
 • Natural language cake description input  
@@ -13,7 +33,7 @@ The system integrates Stable Diffusion XL for image generation and Babylon.js fo
 • REST API backend built with Flask  
 • Dynamic texture mapping on 3D models
 
-## System Architecture
+## System Architecture 
 
 User Prompt (Frontend UI)
         ↓
@@ -31,7 +51,7 @@ Babylon.js 3D Viewer
         ↓
 Textured Cake Model Rendering
 
-## Tech Stack
+## 🛠 Tech Stack
 
 Backend
 • Python
@@ -47,7 +67,7 @@ Frontend
 AI
 • Stable Diffusion XL
 
-## Installation
+## 📦 Installation
 
 1. Clone the repository
 
